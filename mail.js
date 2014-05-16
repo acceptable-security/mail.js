@@ -25,21 +25,22 @@ function createServer(domain, port) {
 			data = data.toString();
 				if(activity != "R") {
 					var cmd = data.toString().replace("\r","").trim().split(' ')[0].toUpperCase();
-					console.log(cmd);
 					switch(cmd) {
 						case "HELO":
 							client_domain = data.split(' ')[1].trim();
 							c.write("250 " + server["welcome_message"].replace("%ADDR%", client_domain) + "\n");
 							activity = "W";
+
+							break;
 						case "MAIL":
 							activity = "G";
-							var name = data.toString().replace("MAIL FROM:", "").trim();
-							mail["from"] = name.substr(1).slice(0, -1);
+							var name = data.toString().trim();
+							mail["from"] = name.substr(11).slice(0, -1);
 							c.write("250 Ok " + data.toString().trim() +"\r\n");
 							break;
 						case "RCPT":
-							var name = data.toString().replace("RCPT TO:", "").trim();
-							mail["to"].push(name.substr(1).slice(0, -1));
+							var name = data.toString().trim();
+							mail["to"].push(name.substr(9).slice(0, -1));
 							c.write("250 Ok " + data.toString().trim() +"\r\n");
 							break;
 						case "DATA":
@@ -77,23 +78,13 @@ function createServer(domain, port) {
 
 	});
 	socket.listen(port, function() {
-		console.log('server bound');
+		
 	});
 	server["socket"] = socket;
 	return server;
 }
 
 
-var server = createServer("test.com", 25);
-
-server.on('connection', function (client) {
-	console.log("WOW CONN");
-});
-
-server.on('end', function (client) {
-	console.log("MUCH DISCONN");
-});
-
-server.on('message', function (mail) {
-	console.log(mail);
-});
+module.exports = {
+	createServer: createServer
+};
