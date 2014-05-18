@@ -27,10 +27,6 @@ function getDateTime() {
     return month + "/" + day + "/" + year + " " + hour + ":" + min + ":" + sec;
 }
 
-module.exports = {
-    getDateTime: getDateTime
-};
-
 function logEvent(message) {
 	fs.appendFile("log", "[" +  getDateTime() + "] " + message, function (error) {
 		if(error) {
